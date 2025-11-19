@@ -203,7 +203,7 @@ class MOJXMLProcessingAlrogithm(QgsProcessingAlgorithm):
         vertex_dp = vertex_layer.dataProvider()
 
         # 出力レイヤを読み込みなおす
-        polygon_layer = QgsProject.instance().mapLayer(dest_id)
+        polygon_layer = sink
 
         for feat in polygon_layer.getFeatures():
             geom = feat.geometry()
