@@ -190,7 +190,29 @@ class MOJXMLProcessingAlrogithm(QgsProcessingAlgorithm):
             )
 
         feedback.pushInfo(f"{count} 個の地物を読み込みました。")
+# --- ここから追加: ポリゴン頂点ポイントレイヤ生成 ---
+        from qgis.core import QgsVectorLayer, QgsProject, QgsGeometry, QgsPointXY
 
+        vertex_layer = QgsVectorLayer(
+            "Point?crs=EPSG:4326",
+            "出力レイヤ_頂点",
+            "memory"
+        )
+        vertex_dp = vertex_layer.dataProvider()
+
+        polygon_layer = sink  # ★ ここが重要
+
+        for feat in polygon_layer.getFeatures():
+            geom = feat.geometry()
+            for v in geom.vertices():
+                f = QgsFeature()
+                f.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(v)))
+                vertex_dp.addFeature(f)
+
+        vertex_layer.updateExtents()
+        QgsProject.instance().addMapLayer(vertex_layer)
+        # --- ここまで追加 ---
+        
         return {
             self.OUTPUT: dest_id,
         }
